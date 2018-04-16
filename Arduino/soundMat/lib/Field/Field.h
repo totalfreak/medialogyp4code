@@ -3,24 +3,23 @@
 
 #include "../Note/Note.h"
 #include "../ButtonLib/Button.h"
-#include "../NewTone/NewTone.h"
+#include "../RogueTone/Tone.h"
 
 class Field {
 public:
-  int pin, buzzerPin, soundDuration;
+  int pin, buzzerPin, soundDuration = 300;
+  bool hasKid = false;
   Note note;
-
-  float timeDelta;
+  Tone tone;
   Button button = Button(1, true, true, 50);
   //Note arrays (Scales)
-  Field(int initPin, Note initNote);
-
+  Field(int initPin, Note initNote, int initBuzzerPin);
   Field();
 
-void read();
+  void read();
+  void play();
 
-
-void play();
+  float getFrequency();
 
 };
 #endif
