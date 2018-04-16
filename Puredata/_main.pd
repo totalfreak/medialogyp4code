@@ -1,0 +1,12 @@
+#N canvas 913 187 781 501 10;
+#X msg 480 101 in 12;
+#X obj 480 66 loadbang;
+#X text 523 102 Setting digital pin 12 to input;
+#X obj 480 131 s bela_setDigital;
+#X obj 156 90 r bela_digitalIn12;
+#X obj 156 116 print digitalIn12;
+#X text 272 103 Receiving and printing pin 12;
+#X obj 336 417 dac~;
+#X connect 0 0 3 0;
+#X connect 1 0 0 0;
+#X connect 4 0 5 0;
