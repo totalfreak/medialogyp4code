@@ -15,6 +15,7 @@ public:
 
   void read();
   void play();
+  void stopPlay();
 
 };
 #endif
