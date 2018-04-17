@@ -6,16 +6,18 @@
 
 class Controller {
 public:
-  bool playing = false;
-  int playButtonPin;
+  bool playing = false, counting = false;
+  int playButtonPin, belaPin, BPM;
 
   Button playButton = Button(1, true, true, 50);
 
-  Controller(int InitPlayButtonPin);
+  Controller(int InitPlayButtonPin, int initBelaPin, int initBPM);
 
   Controller();
 
   void read();
+
+  void countIn();
 
 };
 

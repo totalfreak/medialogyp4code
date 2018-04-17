@@ -9,29 +9,34 @@
 //  22 = C
 //  24 = D
 //  26 = E
-//  28 = F
-//  30 = h
-Field pentaFields[2][5] = {
+//  28 = G
+//  30 = A
+Field pentaFields[8][5] = {
   {Field(52, 22), Field(50, 24), Field(48, 26), Field(46, 28), Field(44, 30)},
-  {Field(42, 22), Field(40, 24), Field(38, 26), Field(36, 28), Field(34, 30)}
+  {Field(52, 22), Field(50, 24), Field(48, 26), Field(46, 28), Field(44, 30)},
+  {Field(52, 22), Field(50, 24), Field(48, 26), Field(46, 28), Field(44, 30)},
+  {Field(52, 22), Field(50, 24), Field(48, 26), Field(46, 28), Field(44, 30)},
+  {Field(52, 22), Field(50, 24), Field(48, 26), Field(46, 28), Field(44, 30)},
+  {Field(52, 22), Field(50, 24), Field(48, 26), Field(46, 28), Field(44, 30)},
+  {Field(52, 22), Field(50, 24), Field(48, 26), Field(46, 28), Field(44, 30)},
+  {Field(52, 22), Field(50, 24), Field(48, 26), Field(46, 28), Field(44, 30)}
 
 };
 
 unsigned long millisDiff = 0;
-  //BPM = 120
-int BPM = 120;
+         //BPM = 120
+int BPM = (1.0 / 120 )*60*1000;
 int soundDuration;
 
-int amountOfBeats = 2;
+int amountOfBeats = 8;
 
 int beatIterator = 0;
 
-Controller controller = Controller(53);
+Controller controller = Controller(53, 31, BPM);
 
 void setup() {
     // put your setup code here, to run once:
     Serial.begin(9600);
-    BPM = (1.0 / BPM)*60*1000;
     soundDuration = BPM-50;
 }
 
