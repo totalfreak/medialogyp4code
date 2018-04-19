@@ -11,17 +11,22 @@ int BPM = (1.0 / 120 )*60*1000;
 //  26 = E
 //  28 = G
 //  30 = A
-Field pentaFields[1][5] = {
+Field pentaFields[8][5] = {
+  {Field(52, 22, BPM), Field(50, 24, BPM), Field(48, 26, BPM), Field(46, 28, BPM), Field(44, 30, BPM)},
+  {Field(52, 22, BPM), Field(50, 24, BPM), Field(48, 26, BPM), Field(46, 28, BPM), Field(44, 30, BPM)},
+  {Field(52, 22, BPM), Field(50, 24, BPM), Field(48, 26, BPM), Field(46, 28, BPM), Field(44, 30, BPM)},
+  {Field(52, 22, BPM), Field(50, 24, BPM), Field(48, 26, BPM), Field(46, 28, BPM), Field(44, 30, BPM)},
+  {Field(52, 22, BPM), Field(50, 24, BPM), Field(48, 26, BPM), Field(46, 28, BPM), Field(44, 30, BPM)},
+  {Field(52, 22, BPM), Field(50, 24, BPM), Field(48, 26, BPM), Field(46, 28, BPM), Field(44, 30, BPM)},
+  {Field(52, 22, BPM), Field(50, 24, BPM), Field(48, 26, BPM), Field(46, 28, BPM), Field(44, 30, BPM)},
   {Field(52, 22, BPM), Field(50, 24, BPM), Field(48, 26, BPM), Field(46, 28, BPM), Field(44, 30, BPM)}
-
-
 };
 
 unsigned long millisDiff = 0;
 
 int soundDuration;
 
-int amountOfBeats = 1;
+int amountOfBeats = 8;
 
 int beatIterator = 0;
 
@@ -35,6 +40,8 @@ void setup() {
 
 void loop() {
   checkForKids();
+  playPreviews();
+  stopPreviews();
   controller.read();
   if (controller.playing) {
     //Start playing beat
@@ -62,6 +69,32 @@ void playBeat(int iterator) {
 void stopBeat(int iterator) {
   for(int i = 0; i < 5; i++) {
     pentaFields[iterator][i].stopPlay();
+  }
+}
+
+void playPreviews() {
+  for(int i = 0; i < amountOfBeats; i++) {
+    for(int j = 0; j < 5; j++) {
+      if(pentaFields[i][j].hasKid && pentaFields[i][j].soundDuration == 0 && !controller.playing && !pentaFields[i][j].hasPlayedPreview) {
+        pentaFields[i][j].hasPlayedPreview = true;
+        pentaFields[i][j].play();
+        pentaFields[i][j].soundDuration = BPM-50;
+
+      }
+      if(pentaFields[i][j].soundDuration > 0) {
+        pentaFields[i][j].soundDuration -= 1;
+      }
+    }
+  }
+}
+
+void stopPreviews() {
+    for(int i = 0; i < amountOfBeats; i++) {
+      for(int j = 0; j < 5; j++) {
+        if(!controller.playing && pentaFields[i][j].soundDuration <= 0) {
+          pentaFields[i][j].stopPlay();
+      }
+    }
   }
 }
 

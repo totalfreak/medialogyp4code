@@ -5,8 +5,8 @@
 
 class Field {
 public:
-  int pin, belaPin, soundDuration = 300, BPM;
-  bool hasKid = false, isPlaying = false, isCountingIn = false;
+  int pin, belaPin, soundDuration = 0, BPM;
+  bool hasKid = false, isPlaying = false, isCountingIn = false, hasPlayedPreview = false;
   Button button = Button(1, true, true, 50);
   //Note arrays (Scales)
   Field(int initPin, int initBelaPin, int initBPM);

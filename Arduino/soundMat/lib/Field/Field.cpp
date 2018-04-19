@@ -6,6 +6,7 @@ Field::Field(int initPin, int initBelaPin, int initBPM) {
   belaPin = initBelaPin;
   button = Button(pin, true, true, 50);
   BPM = initBPM;
+  soundDuration = BPM-50;
   pinMode(belaPin, OUTPUT);
 }
 
@@ -14,13 +15,9 @@ void Field::read() {
   button.read();
   if (button.wasPressed()) {
     hasKid = true;
-    if(!isPlaying && !isCountingIn) {
-      play();
-      delay(BPM-50);
-      stopPlay();
-    }
   } else if(button.wasReleased()) {
     hasKid = false;
+    hasPlayedPreview = false;
   }
 }
 

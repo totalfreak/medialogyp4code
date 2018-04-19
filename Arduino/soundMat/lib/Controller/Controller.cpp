@@ -13,6 +13,9 @@ Controller::Controller() {};
 
 void Controller::read() {
   playButton.read();
+  if(playButton.wasPressed() && playing && !counting) {
+    playing = false;
+  } else
   if (playButton.wasPressed() && !playing && !counting) {
     countIn();
   }
