@@ -1,19 +1,25 @@
 #include "Arduino.h"
 #include "Field.h"
 
-Field::Field(int initPin, int initBelaPin) {
+Field::Field(int initPin, int initBelaPin, int initBPM) {
   pin = initPin;
   belaPin = initBelaPin;
   button = Button(pin, true, true, 50);
+  BPM = initBPM;
   pinMode(belaPin, OUTPUT);
 }
 
 
 void Field::read() {
   button.read();
-  if (button.isPressed()) {
+  if (button.wasPressed()) {
     hasKid = true;
-  } else {
+    if(!isPlaying && !isCountingIn) {
+      play();
+      delay(BPM-50);
+      stopPlay();
+    }
+  } else if(button.wasReleased()) {
     hasKid = false;
   }
 }

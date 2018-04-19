@@ -1,8 +1,8 @@
 #include "Arduino.h"
 #include "../Field/Field.h"
 #include "Controller.h"
-
-
+       //BPM = 120
+int BPM = (1.0 / 120 )*60*1000;
 
 // Field(buttonPin, belaPin);
 // belaPins
@@ -11,24 +11,17 @@
 //  26 = E
 //  28 = G
 //  30 = A
-Field pentaFields[8][5] = {
-  {Field(52, 22), Field(50, 24), Field(48, 26), Field(46, 28), Field(44, 30)},
-  {Field(52, 22), Field(50, 24), Field(48, 26), Field(46, 28), Field(44, 30)},
-  {Field(52, 22), Field(50, 24), Field(48, 26), Field(46, 28), Field(44, 30)},
-  {Field(52, 22), Field(50, 24), Field(48, 26), Field(46, 28), Field(44, 30)},
-  {Field(52, 22), Field(50, 24), Field(48, 26), Field(46, 28), Field(44, 30)},
-  {Field(52, 22), Field(50, 24), Field(48, 26), Field(46, 28), Field(44, 30)},
-  {Field(52, 22), Field(50, 24), Field(48, 26), Field(46, 28), Field(44, 30)},
-  {Field(52, 22), Field(50, 24), Field(48, 26), Field(46, 28), Field(44, 30)}
+Field pentaFields[1][5] = {
+  {Field(52, 22, BPM), Field(50, 24, BPM), Field(48, 26, BPM), Field(46, 28, BPM), Field(44, 30, BPM)}
+
 
 };
 
 unsigned long millisDiff = 0;
-         //BPM = 120
-int BPM = (1.0 / 120 )*60*1000;
+
 int soundDuration;
 
-int amountOfBeats = 8;
+int amountOfBeats = 1;
 
 int beatIterator = 0;
 
@@ -77,6 +70,8 @@ void checkForKids() {
   for(int i = 0; i < amountOfBeats; i++) {
     for(int j = 0; j < 5; j++) {
       pentaFields[i][j].read();
+      pentaFields[i][j].isPlaying = controller.playing;
+      pentaFields[i][j].isCountingIn = controller.counting;
     }
   }
 }
