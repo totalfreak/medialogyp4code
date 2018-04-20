@@ -145,7 +145,7 @@ volume) in 20 ms after waiting 20 ms;
 #X obj 728 292 octaveUp;
 #X obj 875 287 octaveUp;
 #X obj 1015 293 octaveUp;
-#X obj 768 623 *~ 0.6;
+#X obj 768 623 *~ 0.5;
 #X connect 0 0 45 0;
 #X connect 0 0 70 0;
 #X connect 0 0 75 0;
