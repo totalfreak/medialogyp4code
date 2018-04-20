@@ -10,6 +10,8 @@ Field::Field(int initPin, int initBelaPin, int initBPM) {
   pinMode(belaPin, OUTPUT);
 }
 
+Field::Field() {};
+
 
 void Field::read() {
   button.read();
@@ -23,9 +25,7 @@ void Field::read() {
 
 
 void Field::play() {
-  if(hasKid) {
     digitalWrite(belaPin, HIGH);
-  }
 }
 
 void Field::stopPlay() {

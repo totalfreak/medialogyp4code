@@ -6,14 +6,15 @@
 
 class Controller {
 public:
-  bool playing = false, counting = false;
-  int playButtonPin, metroPin, BPM, octaveUpPin, octaveDownPin, octaveIterator = 4;
+  bool playing = false, counting = false, recording = false;
+  int playButtonPin, metroPin, BPM, octaveUpPin, octaveDownPin, octaveIterator = 4, recButtonPin;
 
   Button playButton = Button(1, true, true, 50);
   Button octaveUpButton = Button(1, true, true, 50);
   Button octaveDownButton = Button(1, true, true, 50);
+  Button recButton = Button(1, true, true, 50);
 
-  Controller(int InitPlayButtonPin, int initMetroPin, int initBPM, int initOctaveUpPin, int initOctaveDownPin);
+  Controller(int InitPlayButtonPin, int initMetroPin, int initBPM, int initOctaveUpPin, int initOctaveDownPin, int initRecButtonPin);
 
   Controller();
 
@@ -22,7 +23,7 @@ public:
   void octaveUp();
   void octaveDown();
 
-  void countIn();
+  void countIn(bool shouldRecord);
 
 };
 
