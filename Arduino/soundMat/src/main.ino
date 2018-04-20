@@ -30,7 +30,7 @@ int amountOfBeats = 8;
 
 int beatIterator = 0;
 
-Controller controller = Controller(53, 31, BPM);
+Controller controller = Controller(53, 31, BPM, A0, A1);
 
 void setup() {
     // put your setup code here, to run once:

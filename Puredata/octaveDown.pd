@@ -1,4 +1,4 @@
-#N canvas 0 58 1920 1022 10;
+#N canvas 0 70 1920 946 10;
 #X obj 198 123 bng 30 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
 #X floatatom 86 291 5 0 0 0 - - -, f 5;
@@ -11,8 +11,10 @@
 #X obj 218 80 inlet;
 #X obj 168 187 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
+#X obj 170 321 print;
 #X connect 0 0 4 0;
 #X connect 1 0 6 0;
+#X connect 1 0 10 0;
 #X connect 2 0 3 0;
 #X connect 2 0 5 0;
 #X connect 4 0 5 1;
