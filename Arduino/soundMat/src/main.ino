@@ -24,18 +24,27 @@ struct Segment {
 //  28 = G
 //  30 = A
 Field pentaFields[4][5] = {
-  {Field(52, 22, BPM), Field(50, 24, BPM), Field(48, 26, BPM), Field(46, 28, BPM), Field(44, 30, BPM)},
-  {Field(52, 22, BPM), Field(50, 24, BPM), Field(48, 26, BPM), Field(46, 28, BPM), Field(44, 30, BPM)},
-  {Field(52, 22, BPM), Field(50, 24, BPM), Field(48, 26, BPM), Field(46, 28, BPM), Field(44, 30, BPM)},
-  {Field(52, 22, BPM), Field(50, 24, BPM), Field(48, 26, BPM), Field(46, 28, BPM), Field(44, 30, BPM)}
+  {Field(44, 22, BPM), Field(46, 24, BPM), Field(48, 26, BPM), Field(50, 28, BPM), Field(52, 30, BPM)},
+  {Field(34, 22, BPM), Field(36, 24, BPM), Field(38, 26, BPM), Field(40, 28, BPM), Field(42, 30, BPM)},
+  {Field(43, 22, BPM), Field(45, 24, BPM), Field(47, 26, BPM), Field(49, 28, BPM), Field(51, 30, BPM)},
+  {Field(A15, 22, BPM), Field(A14, 24, BPM), Field(A13, 26, BPM), Field(A12, 28, BPM), Field(A11, 30, BPM)}
 };
 
-unsigned long millisDiff = 0;
+//Segment selector buttons
+Button segementSelectors[4] = {Button(A3, true, true, 50), Button(A4, true, true, 50), Button(A5, true, true, 50), Button(A6, true, true, 50)};
 
+
+// Used in keeping track of time when changing beats
+unsigned long millisDiff = 0;
+float deltaTime = 0.0;
+
+//How long the each beat should play
 int soundDuration;
 
+//Amount of beats
 int amountOfBeats = 4;
 
+//Int used for iterating over the beats
 int beatIterator = 0;
 
 //Amount of possible segements
@@ -43,39 +52,60 @@ int amountOfSegments = 4;
 
 Segment segments[4];
 
+//The controller object
+//Controller(playButton pin, metronome pin, BPM, octaveUp pin, octaveDown pin, recordButton pin)
 Controller controller = Controller(53, 31, BPM, A0, A1, A2);
 
 void setup() {
-    // put your setup code here, to run once:
     Serial.begin(9600);
     soundDuration = BPM-50;
     Serial.println(sizeof(Segment));
-    //Reset segments;
+
+    //Reset segments
     //writeSegments();
+
+    //Reading the segments into segments[]
     readSegments();
+    selectorStateChanger();
 }
 
 void loop() {
   checkForKids();
-  playPreviews();
   stopPreviews();
+  playPreviews();
+
   controller.read();
-  if (controller.playing || controller.recording) {
-    //Start playing beat
-    if((unsigned long)(millis() - millisDiff) > BPM)  {
-      millisDiff = (unsigned long)(millis());
+
+  if((unsigned long)(millis() - millisDiff) > BPM)  {
+    deltaTime = (unsigned long)(millis() - millisDiff);
+    //Serial.println(deltaTime);
+    millisDiff = (unsigned long)(millis());
+    if (controller.playing || controller.recording) {
+      //Start playing beat
       playBeat(beatIterator, 0);
     }
+  }
+
+  if(!controller.playing && !controller.recording && !controller.counting) {
+    selectorStateChanger();
+  }
+}
+
+void selectorStateChanger() {
+  for(int i = 0; i < amountOfSegments; i++) {
+    segementSelectors[i].read();
+    if(segementSelectors[i].wasPressed()) {
+      segments[i].enabled = !segments[i].enabled;
+    }
+    digitalWrite(controller.segmentLedPins[i], segments[i].enabled);
   }
 }
 
 void playBeat(int iterator, int segmentSelector) {
   Serial.println("Playing beat number: " + String(iterator));
   if(!controller.recording) {
-    Serial.println("Before: " + String(controller.octaveIterator));
     int octaveDiff = segments[segmentSelector].sequence[iterator].octave - controller.octaveIterator;
     octaveChangeroo(octaveDiff);
-    Serial.println("After: " + String(controller.octaveIterator));
   }
 
   for(int i = 0; i < 5; i++) {
@@ -87,7 +117,6 @@ void playBeat(int iterator, int segmentSelector) {
         pentaFields[iterator][i].play();
         segments[segmentSelector].sequence[iterator].activatedFields[i] = pentaFields[iterator][i];
         segments[segmentSelector].sequence[iterator].octave = controller.octaveIterator;
-        Serial.println(segments[segmentSelector].sequence[iterator].activatedFields[i].pin);
       }
     } else {
       if (!segments[segmentSelector].enabled) {
@@ -143,14 +172,16 @@ void octaveChangeroo(int diff) {
 void playPreviews() {
   for(int i = 0; i < amountOfBeats; i++) {
     for(int j = 0; j < 5; j++) {
-      if(pentaFields[i][j].hasKid && pentaFields[i][j].soundDuration == 0 && !controller.playing && !pentaFields[i][j].hasPlayedPreview) {
-        pentaFields[i][j].hasPlayedPreview = true;
-        pentaFields[i][j].play();
-        pentaFields[i][j].soundDuration = BPM-50;
-
+      if(pentaFields[i][j].hasKid && !controller.playing && !controller.counting && !controller.recording && pentaFields[i][j].soundDuration <= 0 && !pentaFields[i][j].hasPlayedPreview) {
+        for(int g = 0; g < amountOfBeats; g++) {
+          pentaFields[g][j].hasPlayedPreview = true;
+          pentaFields[g][j].play();
+          pentaFields[g][j].soundDuration = BPM-50;
+        }
       }
       if(pentaFields[i][j].soundDuration > 0) {
-        pentaFields[i][j].soundDuration -= 1;
+         pentaFields[i][j].soundDuration -= 50;
+         Serial.println(String(pentaFields[i][j].soundDuration) + " " + "Field " + String(i) + "," + String(j));
       }
     }
   }
@@ -159,8 +190,9 @@ void playPreviews() {
 void stopPreviews() {
     for(int i = 0; i < amountOfBeats; i++) {
       for(int j = 0; j < 5; j++) {
-        if(!controller.playing && pentaFields[i][j].soundDuration <= 0) {
+        if(!controller.playing && !controller.recording && !controller.counting && pentaFields[i][j].soundDuration <= 0) {
           pentaFields[i][j].stopPlay();
+          //Serial.println("STOPPED");
       }
     }
   }

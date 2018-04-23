@@ -14,6 +14,11 @@ Controller::Controller(int initPlayButtonPin, int initMetroPin, int initBPM, int
 
   pinMode(metroPin, OUTPUT);
 
+  for(int i = 0; i < 4; i++) {
+    pinMode(segmentLedPins[i], OUTPUT);
+  }
+
+
   playButton = Button(playButtonPin, true, true, 50);
   octaveUpButton = Button(octaveUpPin, true, true, 50);
   octaveDownButton = Button(octaveDownPin, true, true, 50);
