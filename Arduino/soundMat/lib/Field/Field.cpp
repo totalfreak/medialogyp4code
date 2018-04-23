@@ -4,7 +4,7 @@
 Field::Field(int initPin, int initBelaPin, int initBPM) {
   pin = initPin;
   belaPin = initBelaPin;
-  button = Button(pin, true, true, 50);
+  button = Button(pin, true, true, 100);
   BPM = initBPM;
   soundDuration = -1;
   pinMode(belaPin, OUTPUT);

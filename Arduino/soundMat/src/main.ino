@@ -25,8 +25,8 @@ struct Segment {
 //  30 = A
 Field pentaFields[4][5] = {
   {Field(44, 22, BPM), Field(46, 24, BPM), Field(48, 26, BPM), Field(50, 28, BPM), Field(52, 30, BPM)},
-  {Field(34, 22, BPM), Field(36, 24, BPM), Field(38, 26, BPM), Field(40, 28, BPM), Field(42, 30, BPM)},
-  {Field(43, 22, BPM), Field(45, 24, BPM), Field(47, 26, BPM), Field(49, 28, BPM), Field(51, 30, BPM)},
+  {Field(42, 22, BPM), Field(40, 24, BPM), Field(38, 26, BPM), Field(36, 28, BPM), Field(34, 30, BPM)},
+  {Field(9, 22, BPM), Field(8, 24, BPM), Field(7, 26, BPM), Field(6, 28, BPM), Field(5, 30, BPM)},
   {Field(A15, 22, BPM), Field(A14, 24, BPM), Field(A13, 26, BPM), Field(A12, 28, BPM), Field(A11, 30, BPM)}
 };
 
@@ -82,7 +82,11 @@ void loop() {
     millisDiff = (unsigned long)(millis());
     if (controller.playing || controller.recording) {
       //Start playing beat
-      playBeat(beatIterator, 0);
+      for(int i = 0; i < amountOfSegments; i++) {
+        if(segments[i].enabled)
+          for(int j = 0; j < amountOfBeats; j++)
+            playBeat(j, i);
+      }
     }
   }
 
@@ -96,6 +100,7 @@ void selectorStateChanger() {
     segementSelectors[i].read();
     if(segementSelectors[i].wasPressed()) {
       segments[i].enabled = !segments[i].enabled;
+      writeSegments();
     }
     digitalWrite(controller.segmentLedPins[i], segments[i].enabled);
   }
@@ -174,10 +179,10 @@ void playPreviews() {
     for(int j = 0; j < 5; j++) {
       if(pentaFields[i][j].hasKid && !controller.playing && !controller.counting && !controller.recording && pentaFields[i][j].soundDuration <= 0 && !pentaFields[i][j].hasPlayedPreview) {
         for(int g = 0; g < amountOfBeats; g++) {
-          pentaFields[g][j].hasPlayedPreview = true;
-          pentaFields[g][j].play();
           pentaFields[g][j].soundDuration = BPM-50;
         }
+        pentaFields[i][j].hasPlayedPreview = true;
+        pentaFields[i][j].play();
       }
       if(pentaFields[i][j].soundDuration > 0) {
          pentaFields[i][j].soundDuration -= 50;
