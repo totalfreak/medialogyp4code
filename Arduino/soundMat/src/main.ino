@@ -46,6 +46,7 @@ int amountOfBeats = 4;
 
 //Int used for iterating over the beats
 int beatIterator = 0;
+int segmentIterator = 0;
 
 //Amount of possible segements
 int amountOfSegments = 4;
@@ -82,9 +83,20 @@ void loop() {
     millisDiff = (unsigned long)(millis());
     if (controller.playing || controller.recording) {
       //Start playing beat of each enabled segment
-      for(int i = 0; i < amountOfSegments; i++) {
-        if(segments[i].enabled)
-            playBeat(beatIterator, i);
+      if(segments[segmentIterator].enabled) {
+          for(int i = 0; i < amountOfSegments; i++) {
+            digitalWrite(controller.segmentLedPins[i], LOW);
+          }
+          digitalWrite(controller.segmentLedPins[segmentIterator], HIGH);
+          playBeat(beatIterator, segmentIterator);
+        } else {
+          segmentIterator++;
+          if(segmentIterator >= amountOfSegments) {
+            segmentIterator = 0;
+            beatIterator = 0;
+            controller.playing = false;
+            controller.recording = false;
+          }
         }
       }
     }
@@ -134,11 +146,15 @@ void playBeat(int iterator, int segmentSelector) {
   stopBeat(beatIterator, segmentSelector);
   beatIterator++;
   if(beatIterator >= amountOfBeats) {
-    if(controller.recording)
-      writeSegments();
     beatIterator = 0;
-    controller.playing = false;
-    controller.recording = false;
+    segmentIterator++;
+    if(segmentIterator >= amountOfSegments) {
+      if(controller.recording)
+        writeSegments();
+      segmentIterator = 0;
+      controller.playing = false;
+      controller.recording = false;
+    }
   }
 }
 
