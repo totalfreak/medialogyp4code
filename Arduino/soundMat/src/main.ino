@@ -81,14 +81,13 @@ void loop() {
     //Serial.println(deltaTime);
     millisDiff = (unsigned long)(millis());
     if (controller.playing || controller.recording) {
-      //Start playing beat
+      //Start playing beat of each enabled segment
       for(int i = 0; i < amountOfSegments; i++) {
         if(segments[i].enabled)
-          for(int j = 0; j < amountOfBeats; j++)
-            playBeat(j, i);
+            playBeat(beatIterator, i);
+        }
       }
     }
-  }
 
   if(!controller.playing && !controller.recording && !controller.counting) {
     selectorStateChanger();
@@ -109,6 +108,7 @@ void selectorStateChanger() {
 void playBeat(int iterator, int segmentSelector) {
   Serial.println("Playing beat number: " + String(iterator));
   if(!controller.recording) {
+    //Getting the difference between the current octave and the desired octave, and changes it accordingly.
     int octaveDiff = segments[segmentSelector].sequence[iterator].octave - controller.octaveIterator;
     octaveChangeroo(octaveDiff);
   }
@@ -119,9 +119,9 @@ void playBeat(int iterator, int segmentSelector) {
       controller.read();
       segments[segmentSelector].sequence[iterator].activatedFields[i] = Field(0,0,0);
       if(pentaFields[iterator][i].hasKid) {
-        pentaFields[iterator][i].play();
         segments[segmentSelector].sequence[iterator].activatedFields[i] = pentaFields[iterator][i];
         segments[segmentSelector].sequence[iterator].octave = controller.octaveIterator;
+        segments[segmentSelector].sequence[iterator].activatedFields[i].play();
       }
     } else {
       if (!segments[segmentSelector].enabled) {
@@ -144,7 +144,7 @@ void playBeat(int iterator, int segmentSelector) {
 
 void stopBeat(int iterator, int segmentSelector) {
   for(int i = 0; i < 5; i++) {
-    pentaFields[iterator][i].stopPlay();
+    //pentaFields[iterator][i].stopPlay();
     segments[segmentSelector].sequence[iterator].activatedFields[i].stopPlay();
   }
 }
