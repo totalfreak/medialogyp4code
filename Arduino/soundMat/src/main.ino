@@ -26,7 +26,7 @@ struct Segment {
 Field pentaFields[4][5] = {
   {Field(44, 22, BPM), Field(46, 24, BPM), Field(48, 26, BPM), Field(50, 28, BPM), Field(52, 30, BPM)},
   {Field(42, 22, BPM), Field(40, 24, BPM), Field(38, 26, BPM), Field(36, 28, BPM), Field(34, 30, BPM)},
-  {Field(9, 22, BPM), Field(8, 24, BPM), Field(7, 26, BPM), Field(6, 28, BPM), Field(5, 30, BPM)},
+  {Field(6, 22, BPM), Field(5, 24, BPM), Field(4, 26, BPM), Field(3, 28, BPM), Field(2, 30, BPM)},
   {Field(A15, 22, BPM), Field(A14, 24, BPM), Field(A13, 26, BPM), Field(A12, 28, BPM), Field(A11, 30, BPM)}
 };
 
