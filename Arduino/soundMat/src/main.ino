@@ -1,9 +1,23 @@
 #include "Arduino.h"
+#include "../lib/fastled/FastLED.h"
+#include "../lib/neopixel/Adafruit_NeoPixel.h"
 #include <EEPROM.h>
 #include "../Field/Field.h"
 #include "Controller.h"
+
+#ifdef __AVR__
+  #include <avr/power.h>
+#endif
+
          //BPM = 120
 int BPM = (1.0 / 120 )*60*1000;
+
+#define NUM_LEDS 2
+#define DATA_PIN 9
+#define CLOCK_PIN 8
+#define LED_COLOUR_ORDER RGB
+
+CRGB leds[NUM_LEDS];
 
 struct SequenceField {
   int octave = 4;
@@ -65,12 +79,23 @@ void setup() {
     //Reset segments
     //writeSegments();
 
+    FastLED.addLeds<SK9822, DATA_PIN, CLOCK_PIN, LED_COLOUR_ORDER>(leds, NUM_LEDS);
+    FastLED.setBrightness(64);
+    FastLED.setDither(1);
+
+    leds[0] = CRGB::Red;
+    FastLED.show();
+
+
     //Reading the segments into segments[]
     readSegments();
     selectorStateChanger();
+
 }
 
 void loop() {
+
+
   checkForKids();
   stopPreviews();
   playPreviews();
@@ -116,6 +141,7 @@ void selectorStateChanger() {
     if(segementSelectors[i].wasPressed()) {
       segments[i].enabled = !segments[i].enabled;
       writeSegments();
+      Serial.println("Changed state of segment " + String(i) + " to " + String(segments[i].enabled));
     }
     digitalWrite(controller.segmentLedPins[i], segments[i].enabled);
   }
