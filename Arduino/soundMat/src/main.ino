@@ -55,7 +55,7 @@ Segment segments[4];
 
 //The controller object
 //Controller(playButton pin, metronome pin, BPM, octaveUp pin, octaveDown pin, recordButton pin)
-Controller controller = Controller(53, 31, BPM, A0, A1, A2);
+Controller controller = Controller(53, 31, BPM, A0, A1, A2, 51);
 
 void setup() {
     Serial.begin(9600);
@@ -76,6 +76,10 @@ void loop() {
   playPreviews();
 
   controller.read();
+
+  if(!controller.playing && !controller.recording && controller.resetButton.wasPressed()) {
+    resetSegments();
+  }
 
   if((unsigned long)(millis() - millisDiff) > BPM)  {
     deltaTime = (unsigned long)(millis() - millisDiff);
@@ -165,13 +169,22 @@ void stopBeat(int iterator, int segmentSelector) {
   }
 }
 
+void resetSegments() {
+  for(int i = 0; i < amountOfSegments; i++) {
+    segments[i] = Segment();
+    Serial.println("New empty segment enabled: " + String(segments[i].enabled));
+  }
+  writeSegments();
+}
+
+//Iterating through EEPROM and writing the segments
 void writeSegments() {
   for(int i = 0; i < amountOfSegments; i++) {
     EEPROM.put(i*sizeof(Segment), segments[i]);
   }
 }
 
-//Read and save highscores in highscores array
+//Read and save the segments from the EEPROM to the segments array
 void readSegments() {
   for(int i = 0; i < amountOfSegments; i++) {
     EEPROM.get(i*sizeof(Segment), segments[i]);
@@ -213,7 +226,6 @@ void stopPreviews() {
       for(int j = 0; j < 5; j++) {
         if(!controller.playing && !controller.recording && !controller.counting && pentaFields[i][j].soundDuration <= 0) {
           pentaFields[i][j].stopPlay();
-          //Serial.println("STOPPED");
       }
     }
   }

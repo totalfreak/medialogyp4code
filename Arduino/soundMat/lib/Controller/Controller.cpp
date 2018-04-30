@@ -4,13 +4,9 @@
 #define MAXOCTAVE 6
 #define MINOCTAVE 3
 
-Controller::Controller(int initPlayButtonPin, int initMetroPin, int initBPM, int initOctaveUpPin, int initOctaveDownPin, int initRecButtonPin) {
-  playButtonPin = initPlayButtonPin;
+Controller::Controller(int initPlayButtonPin, int initMetroPin, int initBPM, int initOctaveUpPin, int initOctaveDownPin, int initRecButtonPin, int initResetButtonPin) {
   metroPin = initMetroPin;
   BPM = initBPM;
-  octaveUpPin = initOctaveUpPin;
-  octaveDownPin = initOctaveDownPin;
-  recButtonPin = initRecButtonPin;
 
   pinMode(metroPin, OUTPUT);
 
@@ -19,10 +15,11 @@ Controller::Controller(int initPlayButtonPin, int initMetroPin, int initBPM, int
   }
 
 
-  playButton = Button(playButtonPin, true, true, 50);
-  octaveUpButton = Button(octaveUpPin, true, true, 50);
-  octaveDownButton = Button(octaveDownPin, true, true, 50);
-  recButton = Button(recButtonPin, true, true, 50);
+  playButton = Button(initPlayButtonPin, true, true, 50);
+  octaveUpButton = Button(initOctaveUpPin, true, true, 50);
+  octaveDownButton = Button(initOctaveDownPin, true, true, 50);
+  recButton = Button(initRecButtonPin, true, true, 50);
+  resetButton = Button(initResetButtonPin, true, true, 59);
 }
 
 Controller::Controller() {};
@@ -32,7 +29,7 @@ void Controller::read() {
   octaveUpButton.read();
   octaveDownButton.read();
   recButton.read();
-
+  resetButton.read();
   if(octaveUpButton.wasPressed() && octaveIterator < MAXOCTAVE) {
     octaveUp();
     Serial.println("UP: " + String(octaveIterator));
