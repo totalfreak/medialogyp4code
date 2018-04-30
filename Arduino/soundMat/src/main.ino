@@ -197,8 +197,10 @@ void stopBeat(int iterator, int segmentSelector) {
 
 void resetSegments() {
   for(int i = 0; i < amountOfSegments; i++) {
+    if(!segments[i].enabled)
+      continue;
     segments[i] = Segment();
-    Serial.println("New empty segment enabled: " + String(segments[i].enabled));
+    Serial.println("Reset segment: " + String(i) + " to " + String(segments[i].enabled));
   }
   writeSegments();
 }
