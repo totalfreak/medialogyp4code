@@ -12,13 +12,15 @@
          //BPM = 120
 int BPM = (1.0 / 120 )*60*1000;
 
-#define NUM_LEDS 300
+#define NUM_LEDS 62
 #define DATA_PIN 9
 #define CLOCK_PIN 8
 #define LED_COLOUR_ORDER BGR
 #define LED_STRIP_SIZE 15
 
 CRGB leds[NUM_LEDS];
+
+CRGB bgColor = CRGB::DarkBlue;
 
 struct SequenceField {
   int octave = 4;
@@ -81,12 +83,23 @@ void setup() {
     //Reset segments
     //writeSegments();
 
-    FastLED.addLeds<SK9822, DATA_PIN, CLOCK_PIN, LED_COLOUR_ORDER, DATA_RATE_MHZ(12)>(leds, NUM_LEDS);
+    FastLED.addLeds<APA102, DATA_PIN, CLOCK_PIN, LED_COLOUR_ORDER, DATA_RATE_MHZ(12)>(leds, NUM_LEDS);
     FastLED.setBrightness(64);
     //FastLED.setDither(1);
 
     for(int i = 0; i < NUM_LEDS; i++) {
-      leds[i] = CRGB::YellowGreen;
+      leds[i] = bgColor;
+    }
+    for(int i = 0; i < amountOfBeats; i++) {
+      int min = i * LED_STRIP_SIZE;
+      int max = (i+1) * LED_STRIP_SIZE;
+
+      for(int j = min; j < min+2; j++) {
+        leds[j] = CRGB::Red;
+      }
+      for(int j = max; j < max+2; j++) {
+        leds[j] = CRGB::Red;
+      }
     }
 
     FastLED.show();
@@ -116,16 +129,16 @@ void loop() {
     //Serial.println(deltaTime);
     millisDiff = (unsigned long)(millis());
     if (controller.playing || controller.recording) {
+
       //Start playing beat of each enabled segment
       if(segments[segmentIterator].enabled) {
           for(int i = 0; i < amountOfSegments; i++) {
             digitalWrite(controller.segmentLedPins[i], LOW);
           }
           digitalWrite(controller.segmentLedPins[segmentIterator], HIGH);
-          showStrip();
-          FastLED.show();
-          delay(120);
+
           playBeat(beatIterator, segmentIterator);
+          millisDiff = (unsigned long)(millis());
         } else {
           segmentIterator++;
           if(segmentIterator >= amountOfSegments) {
@@ -181,14 +194,16 @@ void playBeat(int iterator, int segmentSelector) {
     }
   }
 
-  delay(soundDuration-120);
-
+  showStrip(iterator);
+  delay(soundDuration);
+  hideStrip(iterator);
   stopBeat(beatIterator, segmentSelector);
 
   beatIterator++;
   if(beatIterator >= amountOfBeats) {
     beatIterator = 0;
     segmentIterator++;
+
     if(segmentIterator >= amountOfSegments) {
       if(controller.recording)
         writeSegments();
@@ -242,17 +257,26 @@ void octaveChangeroo(int diff) {
   }
 }
 
-void showStrip() {
-  // Turn the first led red for 1 second
-  FastLED.clear();
-  FastLED.show();
-  int min = beatIterator * LED_STRIP_SIZE;
-  int max = (beatIterator+1) * LED_STRIP_SIZE;
+void showStrip(int iterator) {
+  //FastLED.clear(true);
+  int min = iterator * LED_STRIP_SIZE;
+  int max = (iterator+1) * LED_STRIP_SIZE;
 
   for(int i = min+2; i < max; i++) {
-    leds[i] = CRGB::OrangeRed;
+    leds[i] = CRGB::Yellow;
   }
 
+  FastLED.show();
+}
+
+void hideStrip(int iterator) {
+  int min = iterator * LED_STRIP_SIZE;
+  int max = (iterator+1) * LED_STRIP_SIZE;
+
+  for(int i = min+2; i < max; i++) {
+    leds[i] = bgColor;
+  }
+  FastLED.show();
 }
 
 void playPreviews() {
@@ -262,6 +286,7 @@ void playPreviews() {
         for(int g = 0; g < amountOfBeats; g++) {
           pentaFields[g][j].soundDuration = BPM-50;
         }
+
         pentaFields[i][j].hasPlayedPreview = true;
         pentaFields[i][j].play();
       }
