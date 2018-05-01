@@ -1,6 +1,6 @@
 #include "Arduino.h"
+#define FASTLED_INTERRUPT_RETRY_COUNT 1
 #include "../lib/fastled/FastLED.h"
-#include "../lib/neopixel/Adafruit_NeoPixel.h"
 #include <EEPROM.h>
 #include "../Field/Field.h"
 #include "Controller.h"
@@ -12,10 +12,11 @@
          //BPM = 120
 int BPM = (1.0 / 120 )*60*1000;
 
-#define NUM_LEDS 2
+#define NUM_LEDS 300
 #define DATA_PIN 9
 #define CLOCK_PIN 8
-#define LED_COLOUR_ORDER RGB
+#define LED_COLOUR_ORDER BGR
+#define LED_STRIP_SIZE 15
 
 CRGB leds[NUM_LEDS];
 
@@ -61,6 +62,7 @@ int amountOfBeats = 4;
 //Int used for iterating over the beats
 int beatIterator = 0;
 int segmentIterator = 0;
+int stripIterator = 1000;
 
 //Amount of possible segements
 int amountOfSegments = 4;
@@ -79,13 +81,16 @@ void setup() {
     //Reset segments
     //writeSegments();
 
-    FastLED.addLeds<SK9822, DATA_PIN, CLOCK_PIN, LED_COLOUR_ORDER>(leds, NUM_LEDS);
+    FastLED.addLeds<SK9822, DATA_PIN, CLOCK_PIN, LED_COLOUR_ORDER, DATA_RATE_MHZ(12)>(leds, NUM_LEDS);
     FastLED.setBrightness(64);
-    FastLED.setDither(1);
+    //FastLED.setDither(1);
 
-    leds[0] = CRGB::Red;
+    for(int i = 0; i < NUM_LEDS; i++) {
+      leds[i] = CRGB::YellowGreen;
+    }
+
     FastLED.show();
-
+    delay(60);
 
     //Reading the segments into segments[]
     readSegments();
@@ -117,6 +122,9 @@ void loop() {
             digitalWrite(controller.segmentLedPins[i], LOW);
           }
           digitalWrite(controller.segmentLedPins[segmentIterator], HIGH);
+          showStrip();
+          FastLED.show();
+          delay(120);
           playBeat(beatIterator, segmentIterator);
         } else {
           segmentIterator++;
@@ -172,8 +180,11 @@ void playBeat(int iterator, int segmentSelector) {
       segments[segmentSelector].sequence[iterator].activatedFields[i].play();
     }
   }
-  delay(soundDuration);
+
+  delay(soundDuration-120);
+
   stopBeat(beatIterator, segmentSelector);
+
   beatIterator++;
   if(beatIterator >= amountOfBeats) {
     beatIterator = 0;
@@ -229,6 +240,19 @@ void octaveChangeroo(int diff) {
       controller.octaveDown();
     }
   }
+}
+
+void showStrip() {
+  // Turn the first led red for 1 second
+  FastLED.clear();
+  FastLED.show();
+  int min = beatIterator * LED_STRIP_SIZE;
+  int max = (beatIterator+1) * LED_STRIP_SIZE;
+
+  for(int i = min+2; i < max; i++) {
+    leds[i] = CRGB::OrangeRed;
+  }
+
 }
 
 void playPreviews() {
