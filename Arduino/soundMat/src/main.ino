@@ -12,11 +12,13 @@
          //BPM = 120
 int BPM = (1.0 / 120 )*60*1000;
 
-#define NUM_LEDS 62
+#define NUM_LEDS 300
 #define DATA_PIN 9
 #define CLOCK_PIN 8
 #define LED_COLOUR_ORDER BGR
 #define LED_STRIP_SIZE 15
+#define LED_STRIP_OFFSET 20
+
 
 CRGB leds[NUM_LEDS];
 
@@ -91,8 +93,8 @@ void setup() {
       leds[i] = bgColor;
     }
     for(int i = 0; i < amountOfBeats; i++) {
-      int min = i * LED_STRIP_SIZE;
-      int max = (i+1) * LED_STRIP_SIZE;
+      int min = i * LED_STRIP_SIZE + LED_STRIP_OFFSET;
+      int max = (i+1) * LED_STRIP_SIZE + LED_STRIP_OFFSET;
 
       for(int j = min; j < min+2; j++) {
         leds[j] = CRGB::Red;
@@ -259,8 +261,8 @@ void octaveChangeroo(int diff) {
 
 void showStrip(int iterator) {
   //FastLED.clear(true);
-  int min = iterator * LED_STRIP_SIZE;
-  int max = (iterator+1) * LED_STRIP_SIZE;
+  int min = iterator * LED_STRIP_SIZE + LED_STRIP_OFFSET;
+  int max = (iterator+1) * LED_STRIP_SIZE + LED_STRIP_OFFSET;
 
   for(int i = min+2; i < max; i++) {
     leds[i] = CRGB::Yellow;
@@ -270,8 +272,8 @@ void showStrip(int iterator) {
 }
 
 void hideStrip(int iterator) {
-  int min = iterator * LED_STRIP_SIZE;
-  int max = (iterator+1) * LED_STRIP_SIZE;
+  int min = iterator * LED_STRIP_SIZE + LED_STRIP_OFFSET;
+  int max = (iterator+1) * LED_STRIP_SIZE + LED_STRIP_OFFSET;
 
   for(int i = min+2; i < max; i++) {
     leds[i] = bgColor;
