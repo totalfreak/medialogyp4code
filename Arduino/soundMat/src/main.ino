@@ -16,13 +16,14 @@ int BPM = (1.0 / 120 )*60*1000;
 #define DATA_PIN 9
 #define CLOCK_PIN 8
 #define LED_COLOUR_ORDER BGR
-#define LED_STRIP_SIZE 15
-#define LED_STRIP_OFFSET 20
+#define LED_STRIP_SIZE 19
+#define LED_STRIP_OFFSET 215
 
 
 CRGB leds[NUM_LEDS];
 
-CRGB bgColor = CRGB::DarkBlue;
+CRGB bgColor = CRGB::Black;
+CRGB lightUpColor = CRGB::Orange;
 
 struct SequenceField {
   int octave = 4;
@@ -86,20 +87,20 @@ void setup() {
     //writeSegments();
 
     FastLED.addLeds<APA102, DATA_PIN, CLOCK_PIN, LED_COLOUR_ORDER, DATA_RATE_MHZ(12)>(leds, NUM_LEDS);
-    FastLED.setBrightness(64);
+    FastLED.setBrightness(20);
     //FastLED.setDither(1);
 
-    for(int i = 0; i < NUM_LEDS; i++) {
+    for(int i = 0; i < LED_STRIP_OFFSET; i++) {
       leds[i] = bgColor;
     }
     for(int i = 0; i < amountOfBeats; i++) {
       int min = i * LED_STRIP_SIZE + LED_STRIP_OFFSET;
       int max = (i+1) * LED_STRIP_SIZE + LED_STRIP_OFFSET;
 
-      for(int j = min; j < min+2; j++) {
+      for(int j = min; j < min+3; j++) {
         leds[j] = CRGB::Red;
       }
-      for(int j = max; j < max+2; j++) {
+      for(int j = max; j < max+3; j++) {
         leds[j] = CRGB::Red;
       }
     }
@@ -264,8 +265,8 @@ void showStrip(int iterator) {
   int min = iterator * LED_STRIP_SIZE + LED_STRIP_OFFSET;
   int max = (iterator+1) * LED_STRIP_SIZE + LED_STRIP_OFFSET;
 
-  for(int i = min+2; i < max; i++) {
-    leds[i] = CRGB::Yellow;
+  for(int i = min+3; i < max; i++) {
+    leds[i] = lightUpColor;
   }
 
   FastLED.show();
@@ -275,7 +276,7 @@ void hideStrip(int iterator) {
   int min = iterator * LED_STRIP_SIZE + LED_STRIP_OFFSET;
   int max = (iterator+1) * LED_STRIP_SIZE + LED_STRIP_OFFSET;
 
-  for(int i = min+2; i < max; i++) {
+  for(int i = min+3; i < max; i++) {
     leds[i] = bgColor;
   }
   FastLED.show();
