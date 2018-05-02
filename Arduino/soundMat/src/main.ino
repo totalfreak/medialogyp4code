@@ -10,7 +10,7 @@
 #endif
 
          //BPM = 120
-int BPM = (1.0 / 120 )*60*1000;
+int BPM = (1.0 / 140 )*60*1000;
 
 #define NUM_LEDS 300
 #define DATA_PIN 9
