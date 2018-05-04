@@ -8,7 +8,7 @@
 #ifdef __AVR__
   #include <avr/power.h>
 #endif
-
+        //Default BPM
          //BPM = 120
 int BPM = (1.0 / 140 )*60*1000;
 

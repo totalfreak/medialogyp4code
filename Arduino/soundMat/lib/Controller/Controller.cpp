@@ -69,9 +69,9 @@ void Controller::countIn(bool shouldRecord) {
   counting = true;
   for(int i = 0; i < 4; i++) {
     digitalWrite(metroPin, HIGH);
-    delay(BPM/2);
+    delay(BPM);
     digitalWrite(metroPin, LOW);
-    delay(BPM/2);
+    delay(BPM);
   }
   recording = shouldRecord;
   playing = !shouldRecord;
