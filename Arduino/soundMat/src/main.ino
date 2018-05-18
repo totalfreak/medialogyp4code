@@ -132,7 +132,6 @@ void loop() {
     //Serial.println(deltaTime);
     millisDiff = (unsigned long)(millis());
     if (controller.playing || controller.recording) {
-
       //Start playing beat of each enabled segment
       if(segments[segmentIterator].enabled) {
           for(int i = 0; i < amountOfSegments; i++) {
